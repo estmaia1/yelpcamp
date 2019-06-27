@@ -11,14 +11,17 @@ var express = require("express"),
 	User = require("./models/user"),
 	seedDB = require("./seeds");
 
+// environment
+var ip = process.env.IP || "localhost",
+	port = process.env.PORT || 3000,
+	url = process.env.DATABASEURL || "mongodb://localhost/yelpcamp";
+
 // requiring routes
 var commentRoutes = require("./routes/comments"),
 	campgroundRoutes = require("./routes/campgrounds"),
 	indexRoutes = require("./routes/index");
 
-mongoose.connect(process.env.DATABASEURL, { useNewUrlParser: true, useCreateIndex: true });
-//mongoose.connect("mongodb://localhost/yelpcamp", { useNewUrlParser: true, useCreateIndex: true });
-//mongoose.connect("mongodb+srv://devstvn:devstvn123@cluster0-yntnc.mongodb.net/yelpcamp?retryWrites=true&w=majority", { useNewUrlParser: true, useCreateIndex: true });
+mongoose.connect(url, { useNewUrlParser: true, useCreateIndex: true });
 mongoose.set("useFindAndModify", false);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
@@ -26,7 +29,7 @@ app.locals.moment = require('moment');
 app.use(methodOverride("_method"));
 app.use(flash());
 app.set("view engine", "ejs");
-//seedDB();
+//seedDB(); // seed the database
 
 // PASSPORT CONFIGURATION
 app.use(require("express-session")({
@@ -51,6 +54,6 @@ app.use("/", indexRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 app.use("/campgrounds", campgroundRoutes);
 
-app.listen(process.env.PORT, process.env.IP, function() {
+app.listen(port, ip, function() {
 	console.log("The YelpCamp server has started on " + process.env.IP + ":" + process.env.PORT);
 });
